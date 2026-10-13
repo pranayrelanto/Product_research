@@ -149,6 +149,30 @@ class CocaColaCreationsApp {
       checkSealRecycle: document.getElementById('check-seal-recycle'),
 
       // Art & Drawing
+      viewportDragOverlay: document.getElementById('viewport-drag-overlay'),
+      wrapperDropzone: document.getElementById('wrapper-dropzone'),
+      inputWrapperFile: document.getElementById('input-wrapper-file'),
+      btnBrowseWrapper: document.getElementById('btn-browse-wrapper'),
+      wrapperControlsPanel: document.getElementById('wrapper-controls-panel'),
+      wrapperThumbImg: document.getElementById('wrapper-thumb-img'),
+      wrapperFilename: document.getElementById('wrapper-filename'),
+      wrapperResolution: document.getElementById('wrapper-resolution'),
+      btnRemoveWrapper: document.getElementById('btn-remove-wrapper'),
+      wrapperFitPills: document.querySelectorAll('#wrapper-fit-pills .pill-seg-btn'),
+      wrapperBlendPills: document.querySelectorAll('#wrapper-blend-pills .pill-seg-btn'),
+      sliderWrapperOpacity: document.getElementById('slider-wrapper-opacity'),
+      lblWrapperOpacity: document.getElementById('lbl-wrapper-opacity'),
+      sliderWrapperScale: document.getElementById('slider-wrapper-scale'),
+      lblWrapperScale: document.getElementById('lbl-wrapper-scale'),
+      sliderWrapperRot: document.getElementById('slider-wrapper-rot'),
+      lblWrapperRot: document.getElementById('lbl-wrapper-rot'),
+      sliderWrapperY: document.getElementById('slider-wrapper-y'),
+      lblWrapperY: document.getElementById('lbl-wrapper-y'),
+      checkHideWaves: document.getElementById('check-hide-waves'),
+      checkHideText: document.getElementById('check-hide-text'),
+      btnSampleCyber: document.getElementById('btn-sample-cyber'),
+      btnSampleSakura: document.getElementById('btn-sample-sakura'),
+      btnSampleGraffiti: document.getElementById('btn-sample-graffiti'),
       btnToggleDrawMode: document.getElementById('btn-toggle-draw-mode'),
       drawModeOverlay: document.getElementById('draw-mode-overlay'),
       btnExitDraw: document.getElementById('btn-exit-draw'),
@@ -346,6 +370,170 @@ class CocaColaCreationsApp {
     this.dom.pullTabBtns.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tabColor.toLowerCase() === hex.toLowerCase());
     });
+  }
+
+  applyCustomWrapperFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      this.showToast('Please upload a valid image file (PNG, JPG, SVG, WebP)', '⚠️');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        this.textureMgr.setCustomWrapperImage(img, file.name);
+
+        if (this.dom.wrapperControlsPanel) this.dom.wrapperControlsPanel.classList.remove('hidden');
+        if (this.dom.wrapperThumbImg) this.dom.wrapperThumbImg.src = e.target.result;
+        if (this.dom.wrapperFilename) this.dom.wrapperFilename.textContent = file.name;
+        if (this.dom.wrapperResolution) this.dom.wrapperResolution.textContent = `${img.width} × ${img.height} px`;
+
+        // Switch to Art/Graphics tab
+        const tabArtBtn = document.getElementById('tab-btn-graphics');
+        if (tabArtBtn) tabArtBtn.click();
+
+        this.audio.playCelebration();
+        confetti({ particleCount: 45, spread: 60, origin: { y: 0.6 } });
+        this.showToast(`✨ Wrapped "${file.name}" onto 3D can!`, '🎨');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeCustomWrapper() {
+    this.textureMgr.removeCustomWrapper();
+    if (this.dom.wrapperControlsPanel) this.dom.wrapperControlsPanel.classList.add('hidden');
+    if (this.dom.wrapperThumbImg) this.dom.wrapperThumbImg.src = '';
+    if (this.dom.inputWrapperFile) this.dom.inputWrapperFile.value = '';
+    this.audio.playClick();
+    this.showToast('Custom wrapper removed', '🗑️');
+  }
+
+  generateSampleArt(type) {
+    const c = document.createElement('canvas');
+    c.width = 1024;
+    c.height = 1024;
+    const ctx = c.getContext('2d');
+
+    if (type === 'cyber') {
+      const grad = ctx.createLinearGradient(0, 0, 1024, 1024);
+      grad.addColorStop(0, '#0a0017');
+      grad.addColorStop(0.5, '#1e0038');
+      grad.addColorStop(1, '#001a33');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      ctx.strokeStyle = '#00d2ff';
+      ctx.lineWidth = 2;
+      for (let x = 0; x <= 1024; x += 64) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 1024);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= 1024; y += 64) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(1024, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      ctx.arc(512, 400, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 68px "Syne", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('CYBER COKE', 512, 700);
+      ctx.font = '800 32px monospace';
+      ctx.fillStyle = '#00e676';
+      ctx.fillText('LIMITED METAVERSE DROP', 512, 760);
+
+    } else if (type === 'sakura') {
+      const grad = ctx.createLinearGradient(0, 0, 0, 1024);
+      grad.addColorStop(0, '#fff0f5');
+      grad.addColorStop(0.5, '#ffd1dc');
+      grad.addColorStop(1, '#ff99aa');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      ctx.strokeStyle = '#4a2c2a';
+      ctx.lineWidth = 14;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(100, 100);
+      ctx.bezierCurveTo(300, 250, 500, 200, 800, 450);
+      ctx.bezierCurveTo(600, 600, 750, 800, 950, 900);
+      ctx.stroke();
+
+      for (let i = 0; i < 90; i++) {
+        const px = (Math.sin(i * 123) * 0.5 + 0.5) * 1024;
+        const py = (Math.cos(i * 456) * 0.5 + 0.5) * 1024;
+        ctx.fillStyle = i % 2 === 0 ? '#ff4081' : '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(px, py, 16, 26, Math.PI / 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = '#b30006';
+      ctx.font = '900 64px "Outfit", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('桜 SAKURA BLOOM', 512, 540);
+
+    } else {
+      ctx.fillStyle = '#ffde59';
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      for (let x = 20; x < 1024; x += 40) {
+        for (let y = 20; y < 1024; y += 40) {
+          ctx.beginPath();
+          ctx.arc(x, y, 7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.fillStyle = '#ff1493';
+      ctx.beginPath();
+      ctx.arc(320, 320, 140, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#00e5ff';
+      ctx.beginPath();
+      ctx.arc(700, 680, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 86px "Bebas Neue", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('STREET POP ART', 512, 480);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 82px "Bebas Neue", sans-serif';
+      ctx.fillText('STREET POP ART', 510, 477);
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      const names = { cyber: 'Cyber-Grid.png', sakura: 'Sakura-Bloom.png', graffiti: 'Pop-Graffiti.png' };
+      const name = names[type] || 'sample.png';
+      this.textureMgr.setCustomWrapperImage(img, name);
+      if (this.dom.wrapperControlsPanel) this.dom.wrapperControlsPanel.classList.remove('hidden');
+      if (this.dom.wrapperThumbImg) this.dom.wrapperThumbImg.src = c.toDataURL();
+      if (this.dom.wrapperFilename) this.dom.wrapperFilename.textContent = name;
+      if (this.dom.wrapperResolution) this.dom.wrapperResolution.textContent = '1024 × 1024 px';
+
+      const tabArtBtn = document.getElementById('tab-btn-graphics');
+      if (tabArtBtn) tabArtBtn.click();
+
+      this.audio.playCelebration();
+      confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
+      this.showToast(`✨ Loaded ${name} sample wrapper!`, '🎨');
+    };
+    img.src = c.toDataURL();
   }
 
   selectColorway(preset) {
@@ -733,7 +921,163 @@ class CocaColaCreationsApp {
       this.textureMgr.updateState({ showRecycleSeal: e.target.checked });
     });
 
-    // 11. Artwork, Stamps & Drawing Tool
+    // 11. Custom Image Wrapper & Drag-and-Drop
+    let dragCounter = 0;
+    window.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      dragCounter++;
+      if (this.dom.viewportDragOverlay) this.dom.viewportDragOverlay.classList.remove('hidden');
+    });
+
+    window.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        if (this.dom.viewportDragOverlay) this.dom.viewportDragOverlay.classList.add('hidden');
+      }
+    });
+
+    window.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragCounter = 0;
+      if (this.dom.viewportDragOverlay) this.dom.viewportDragOverlay.classList.add('hidden');
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        this.applyCustomWrapperFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    if (this.dom.wrapperDropzone) {
+      this.dom.wrapperDropzone.addEventListener('click', (e) => {
+        if (e.target !== this.dom.inputWrapperFile) {
+          this.dom.inputWrapperFile.click();
+        }
+      });
+
+      this.dom.wrapperDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        this.dom.wrapperDropzone.classList.add('drag-active');
+      });
+
+      this.dom.wrapperDropzone.addEventListener('dragleave', () => {
+        this.dom.wrapperDropzone.classList.remove('drag-active');
+      });
+
+      this.dom.wrapperDropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.dom.wrapperDropzone.classList.remove('drag-active');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          this.applyCustomWrapperFile(e.dataTransfer.files[0]);
+        }
+      });
+    }
+
+    if (this.dom.btnBrowseWrapper && this.dom.inputWrapperFile) {
+      this.dom.btnBrowseWrapper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.dom.inputWrapperFile.click();
+      });
+    }
+
+    if (this.dom.inputWrapperFile) {
+      this.dom.inputWrapperFile.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          this.applyCustomWrapperFile(e.target.files[0]);
+        }
+      });
+    }
+
+    if (this.dom.btnRemoveWrapper) {
+      this.dom.btnRemoveWrapper.addEventListener('click', () => {
+        this.removeCustomWrapper();
+      });
+    }
+
+    // Sample Art Presets
+    if (this.dom.btnSampleCyber) {
+      this.dom.btnSampleCyber.addEventListener('click', () => this.generateSampleArt('cyber'));
+    }
+    if (this.dom.btnSampleSakura) {
+      this.dom.btnSampleSakura.addEventListener('click', () => this.generateSampleArt('sakura'));
+    }
+    if (this.dom.btnSampleGraffiti) {
+      this.dom.btnSampleGraffiti.addEventListener('click', () => this.generateSampleArt('graffiti'));
+    }
+
+    // Wrapper Mode & Blend Pills
+    if (this.dom.wrapperFitPills) {
+      this.dom.wrapperFitPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          this.audio.playClick();
+          this.dom.wrapperFitPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          this.textureMgr.updateCustomWrapper({ fit: pill.dataset.fit });
+        });
+      });
+    }
+
+    if (this.dom.wrapperBlendPills) {
+      this.dom.wrapperBlendPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          this.audio.playClick();
+          this.dom.wrapperBlendPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          this.textureMgr.updateCustomWrapper({ blend: pill.dataset.blend });
+        });
+      });
+    }
+
+    // Wrapper Sliders
+    if (this.dom.sliderWrapperOpacity) {
+      this.dom.sliderWrapperOpacity.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        this.dom.lblWrapperOpacity.textContent = `${val}%`;
+        this.textureMgr.updateCustomWrapper({ opacity: val / 100 });
+      });
+    }
+
+    if (this.dom.sliderWrapperScale) {
+      this.dom.sliderWrapperScale.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        this.dom.lblWrapperScale.textContent = `${val}%`;
+        this.textureMgr.updateCustomWrapper({ scale: val / 100 });
+      });
+    }
+
+    if (this.dom.sliderWrapperRot) {
+      this.dom.sliderWrapperRot.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        this.dom.lblWrapperRot.textContent = `${val}°`;
+        this.textureMgr.updateCustomWrapper({ rotation: val });
+      });
+    }
+
+    if (this.dom.sliderWrapperY) {
+      this.dom.sliderWrapperY.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        this.dom.lblWrapperY.textContent = `${val}px`;
+        this.textureMgr.updateCustomWrapper({ verticalOffset: val });
+      });
+    }
+
+    if (this.dom.checkHideWaves) {
+      this.dom.checkHideWaves.addEventListener('change', (e) => {
+        this.textureMgr.updateCustomWrapper({ hideWaves: e.target.checked });
+      });
+    }
+
+    if (this.dom.checkHideText) {
+      this.dom.checkHideText.addEventListener('change', (e) => {
+        this.textureMgr.updateCustomWrapper({ hideText: e.target.checked });
+      });
+    }
+
+    // 12. Artwork, Stamps & Drawing Tool
     let isPainting = false;
     this.dom.btnToggleDrawMode.addEventListener('click', () => {
       this.audio.playClick();

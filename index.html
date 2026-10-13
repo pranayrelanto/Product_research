@@ -89,6 +89,16 @@
             </div>
           </div>
 
+          <!-- Fullscreen Viewport Drag-and-Drop Image Overlay -->
+          <div id="viewport-drag-overlay" class="viewport-drag-overlay hidden">
+            <div class="drag-pulse-card">
+              <span class="drag-hero-icon">🖼️</span>
+              <h2 class="drag-title">DROP IMAGE TO WRAP CAN</h2>
+              <p class="drag-subtitle">Release your image file anywhere to automatically wrap the 3D can in 4K resolution!</p>
+              <div class="drag-badge">PNG • JPG • WEBP • SVG</div>
+            </div>
+          </div>
+
           <!-- Quick Floating Chill Dial -->
           <div class="quick-chill-dial">
             <div class="chill-header">
@@ -431,6 +441,120 @@
 
             <!-- TAB 4: ARTWORK, STAMPS & DRAWING -->
             <section class="tab-panel" id="tab-graphics" role="tabpanel">
+              <!-- Custom Image Wrapper Dropzone & Controls -->
+              <div class="section-block">
+                <div class="section-header-wrap">
+                  <h3 class="section-title">CUSTOM WRAPPER OVERLAY</h3>
+                  <span class="badge-feature">DROP TO WRAP</span>
+                </div>
+                <p class="section-desc">Drop any image or photo to project it as a custom wrapper over the 3D can.</p>
+
+                <!-- Drag & Drop Zone Box -->
+                <div class="image-dropzone" id="wrapper-dropzone">
+                  <input type="file" id="input-wrapper-file" accept="image/*" class="sr-only-file" />
+                  <div class="dropzone-inner">
+                    <span class="dropzone-icon">📥</span>
+                    <div class="dropzone-text-group">
+                      <strong>Drag & Drop Image Here</strong>
+                      <span>or <button type="button" class="btn-browse-link" id="btn-browse-wrapper">browse files</button></span>
+                    </div>
+                    <small class="dropzone-sub">Supports PNG, JPG, WebP, SVG (Auto-wrapped in 4K)</small>
+                  </div>
+                </div>
+
+                <!-- 1-Click Sample Artwork Presets -->
+                <div class="preset-art-row">
+                  <span class="preset-art-label">Try sample art:</span>
+                  <button type="button" class="preset-art-chip" id="btn-sample-cyber">⚡ Cyber Grid</button>
+                  <button type="button" class="preset-art-chip" id="btn-sample-sakura">🌸 Sakura Bloom</button>
+                  <button type="button" class="preset-art-chip" id="btn-sample-graffiti">🎨 Pop Graffiti</button>
+                </div>
+
+                <!-- Custom Wrapper Active Controls Panel (Visible when image is loaded) -->
+                <div class="wrapper-controls-panel hidden" id="wrapper-controls-panel">
+                  <div class="wrapper-meta-card">
+                    <div class="wrapper-thumb-box">
+                      <img id="wrapper-thumb-img" src="" alt="Custom Wrapper Thumbnail" />
+                    </div>
+                    <div class="wrapper-meta-details">
+                      <strong id="wrapper-filename">custom-artwork.png</strong>
+                      <span id="wrapper-resolution">2048 × 1024 px</span>
+                    </div>
+                    <button type="button" id="btn-remove-wrapper" class="btn-remove-art" title="Remove custom wrapper">✕ Remove</button>
+                  </div>
+
+                  <!-- Wrap Fit Mode Pills -->
+                  <div class="control-subgroup">
+                    <label class="control-mini-label">WRAP FIT MODE</label>
+                    <div class="pills-segmented-group" id="wrapper-fit-pills">
+                      <button type="button" class="pill-seg-btn active" data-fit="cover">FULL WRAP</button>
+                      <button type="button" class="pill-seg-btn" data-fit="center">CENTER DECAL</button>
+                      <button type="button" class="pill-seg-btn" data-fit="repeat">REPEAT TILE</button>
+                    </div>
+                  </div>
+
+                  <!-- Blend Mode Pills -->
+                  <div class="control-subgroup">
+                    <label class="control-mini-label">BLEND WITH CAN FINISH</label>
+                    <div class="pills-segmented-group" id="wrapper-blend-pills">
+                      <button type="button" class="pill-seg-btn active" data-blend="source-over">NORMAL</button>
+                      <button type="button" class="pill-seg-btn" data-blend="multiply">MULTIPLY</button>
+                      <button type="button" class="pill-seg-btn" data-blend="overlay">OVERLAY</button>
+                      <button type="button" class="pill-seg-btn" data-blend="screen">SCREEN</button>
+                    </div>
+                  </div>
+
+                  <!-- Sliders: Opacity, Scale, Cylinder Rotation, Vertical Offset -->
+                  <div class="slider-control">
+                    <div class="slider-header">
+                      <span>Wrapper Opacity</span>
+                      <span id="lbl-wrapper-opacity">100%</span>
+                    </div>
+                    <input type="range" id="slider-wrapper-opacity" min="10" max="100" value="100" />
+                  </div>
+
+                  <div class="slider-control">
+                    <div class="slider-header">
+                      <span>Scale / Zoom</span>
+                      <span id="lbl-wrapper-scale">100%</span>
+                    </div>
+                    <input type="range" id="slider-wrapper-scale" min="50" max="250" value="100" />
+                  </div>
+
+                  <div class="slider-control">
+                    <div class="slider-header">
+                      <span>Cylinder Wrap Rotation (360°)</span>
+                      <span id="lbl-wrapper-rot">0°</span>
+                    </div>
+                    <input type="range" id="slider-wrapper-rot" min="-180" max="180" value="0" />
+                  </div>
+
+                  <div class="slider-control">
+                    <div class="slider-header">
+                      <span>Vertical Shift</span>
+                      <span id="lbl-wrapper-y">0px</span>
+                    </div>
+                    <input type="range" id="slider-wrapper-y" min="-250" max="250" value="0" />
+                  </div>
+
+                  <!-- Toggles -->
+                  <div class="checkbox-row" style="margin-top:6px;">
+                    <label class="custom-checkbox">
+                      <input type="checkbox" id="check-hide-waves" />
+                      <span class="checkbox-box"></span>
+                      <span>Hide Dynamic Wave Ribbon</span>
+                    </label>
+                  </div>
+                  <div class="checkbox-row">
+                    <label class="custom-checkbox">
+                      <input type="checkbox" id="check-hide-text" />
+                      <span class="checkbox-box"></span>
+                      <span>Hide "Share a Can" Text</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <div class="section-block">
                 <h3 class="section-title">CAN SURFACE GRAFFITI</h3>
                 <p class="section-desc">Draw or stamp custom art onto the 3D can like the Lacoste Co-Creation tool.</p>

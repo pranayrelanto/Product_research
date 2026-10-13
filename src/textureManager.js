@@ -58,6 +58,20 @@ export class CanTextureManager {
       brushSize: 14
     };
 
+    // 4. Custom Wrapper Overlay State (Drop Image to Wrap Can)
+    this.customWrapper = {
+      image: null,
+      filename: '',
+      fit: 'cover', // 'cover' | 'center' | 'repeat'
+      blend: 'source-over', // 'source-over' | 'multiply' | 'overlay' | 'screen'
+      opacity: 1.0,
+      rotation: 0, // degrees -180 to 180
+      verticalOffset: 0, // px -300 to 300
+      scale: 1.0, // zoom 0.5 to 2.5
+      hideWaves: false,
+      hideText: false
+    };
+
     // Pre-generate droplets
     this.generateCondensationMap();
     this.render();
@@ -68,6 +82,23 @@ export class CanTextureManager {
     if ('chillLevel' in partialState || 'dropletIntensity' in partialState) {
       this.generateCondensationMap();
     }
+    this.render();
+  }
+
+  setCustomWrapperImage(img, filename = 'custom-wrapper.png') {
+    this.customWrapper.image = img;
+    this.customWrapper.filename = filename;
+    this.render();
+  }
+
+  updateCustomWrapper(opts) {
+    Object.assign(this.customWrapper, opts);
+    this.render();
+  }
+
+  removeCustomWrapper() {
+    this.customWrapper.image = null;
+    this.customWrapper.filename = '';
     this.render();
   }
 
@@ -169,22 +200,91 @@ export class CanTextureManager {
     // 1. Base Can Colorway / Gradient
     this.renderBaseBackground(ctx, w, h);
 
-    // 2. Dynamic Ribbon Waves
-    this.renderWavePatterns(ctx, w, h);
+    // 2. Custom Dropped Image Wrapper Overlay
+    if (this.customWrapper.image) {
+      this.renderCustomWrapperImage(ctx, w, h);
+    }
 
-    // 3. Iconic Background Branding Details
+    // 3. Dynamic Ribbon Waves (rendered if not hidden)
+    if (!this.customWrapper.image || !this.customWrapper.hideWaves) {
+      this.renderWavePatterns(ctx, w, h);
+    }
+
+    // 4. Iconic Background Branding Details
     this.renderInsigniasAndNutrition(ctx, w, h);
 
-    // 4. Personalized Custom Typography ("Share a Can with...")
-    this.renderPersonalizedName(ctx, w, h);
+    // 5. Personalized Custom Typography ("Share a Can with...") (rendered if not hidden)
+    if (!this.customWrapper.image || !this.customWrapper.hideText) {
+      this.renderPersonalizedName(ctx, w, h);
+    }
 
-    // 5. User Graffiti & Artwork Layer
+    // 6. User Graffiti & Artwork Layer
     ctx.drawImage(this.artCanvas, 0, 0);
 
     // Notify scene of texture update
     if (this.onTextureUpdated) {
       this.onTextureUpdated(this.canvas);
     }
+  }
+
+  renderCustomWrapperImage(ctx, w, h) {
+    if (!this.customWrapper.image) return;
+    const img = this.customWrapper.image;
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.05, Math.min(1.0, this.customWrapper.opacity));
+    ctx.globalCompositeOperation = this.customWrapper.blend || 'source-over';
+
+    const fit = this.customWrapper.fit || 'cover';
+    const scale = this.customWrapper.scale || 1.0;
+    const rotDeg = this.customWrapper.rotation || 0;
+    const offsetX = (rotDeg / 360) * w;
+    const offsetY = this.customWrapper.verticalOffset || 0;
+
+    if (fit === 'repeat') {
+      const patternCanvas = document.createElement('canvas');
+      const pW = Math.max(64, Math.round(img.width * scale * 0.5));
+      const pH = Math.max(64, Math.round(img.height * scale * 0.5));
+      patternCanvas.width = pW;
+      patternCanvas.height = pH;
+      const pCtx = patternCanvas.getContext('2d');
+      pCtx.drawImage(img, 0, 0, pW, pH);
+
+      const pattern = ctx.createPattern(patternCanvas, 'repeat');
+      if (pattern) {
+        ctx.translate(offsetX, offsetY);
+        ctx.fillStyle = pattern;
+        ctx.fillRect(-w, -h, w * 3, h * 3);
+      }
+    } else if (fit === 'center') {
+      // Front of can is centered at x = w * 0.5
+      const aspect = img.width / img.height;
+      let targetH = Math.min(h * 0.75, h) * scale;
+      let targetW = targetH * aspect;
+      if (targetW > w * 0.8) {
+        targetW = w * 0.8;
+        targetH = targetW / aspect;
+      }
+      const centerX = ((w * 0.5 + offsetX) % w + w) % w;
+      const centerY = (h * 0.52) + offsetY;
+      ctx.drawImage(img, centerX - targetW / 2, centerY - targetH / 2, targetW, targetH);
+    } else {
+      // 'cover' / full wrapper wrap
+      const targetW = w * scale;
+      const targetH = h * scale;
+      const x = offsetX + (w - targetW) / 2;
+      const y = offsetY + (h - targetH) / 2;
+
+      ctx.drawImage(img, x, y, targetW, targetH);
+      // Seamless cylindrical wrap duplicate
+      if (x > 0) {
+        ctx.drawImage(img, x - w, y, targetW, targetH);
+      } else if (x + targetW < w) {
+        ctx.drawImage(img, x + w, y, targetW, targetH);
+      }
+    }
+
+    ctx.restore();
   }
 
   renderBaseBackground(ctx, w, h) {
