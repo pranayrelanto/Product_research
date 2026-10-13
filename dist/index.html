@@ -12,8 +12,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=Pacifico&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-DWd3j1FV.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-xCCuJdb_.css">
+    <script type="module" crossorigin src="/assets/index-QXyseRAE.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-gTHqgUYN.css">
   </head>
   <body>
     <div id="app" class="app-container">
@@ -147,19 +147,53 @@
               <div class="section-block">
                 <h3 class="section-title">CUSTOM COLOR FORMULA</h3>
                 <div class="color-picker-row">
-                  <div class="color-picker-item">
-                    <label for="input-base-color">Primary Body</label>
+                  <div class="color-picker-item active" id="target-base-color" role="button" tabindex="0" title="Click to select Primary Body for color scale">
+                    <div class="color-picker-header">
+                      <label for="input-base-color">Primary Body</label>
+                      <span class="active-indicator-tag" id="tag-base-status">ACTIVE</span>
+                    </div>
                     <div class="color-input-wrapper">
                       <input type="color" id="input-base-color" value="#E60012" />
                       <span id="label-base-hex">#E60012</span>
                     </div>
                   </div>
-                  <div class="color-picker-item">
-                    <label for="input-accent-color">Dynamic Wave Trim</label>
+                  <div class="color-picker-item" id="target-accent-color" role="button" tabindex="0" title="Click to select Wave Trim for color scale">
+                    <div class="color-picker-header">
+                      <label for="input-accent-color">Dynamic Wave Trim</label>
+                      <span class="active-indicator-tag" id="tag-accent-status">SELECT</span>
+                    </div>
                     <div class="color-input-wrapper">
                       <input type="color" id="input-accent-color" value="#FFFFFF" />
                       <span id="label-accent-hex">#FFFFFF</span>
                     </div>
+                  </div>
+                </div>
+
+                <!-- Color Scale & Spectrum Bar -->
+                <div class="color-scale-wrapper" id="color-scale-wrapper">
+                  <div class="color-scale-header">
+                    <span class="color-scale-title">SPECTRUM COLOR SCALE</span>
+                    <span class="color-scale-target-hint" id="color-scale-target-hint">Applying to: <strong id="lbl-scale-target">Primary Body</strong></span>
+                  </div>
+
+                  <!-- Continuous Gradient Hue Spectrum Slider -->
+                  <div class="hue-slider-track-wrap">
+                    <input type="range" id="color-scale-hue-slider" min="0" max="360" value="357" class="hue-slider-input" aria-label="Hue Spectrum Color Scale" />
+                  </div>
+
+                  <!-- Quick Color Scale Swatches -->
+                  <div class="scale-swatches-row" id="formula-color-scale-swatches">
+                    <button type="button" class="formula-swatch-btn" data-color="#E60012" style="background:#E60012;" title="Crimson Red"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#ff3366" style="background:#ff3366;" title="Neon Coral"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#ff6b35" style="background:#ff6b35;" title="Electric Orange"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#ffb703" style="background:#ffb703;" title="Gold Starlight"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#00e676" style="background:#00e676;" title="Cyber Lime"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#00d2ff" style="background:#00d2ff;" title="Glacier Cyan"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#0052cc" style="background:#0052cc;" title="Cobalt Blue"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#7928ca" style="background:#7928ca;" title="Cosmic Purple"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#ff007f" style="background:#ff007f;" title="Hot Magenta"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#ffffff" style="background:#ffffff;" title="Pure White"></button>
+                    <button type="button" class="formula-swatch-btn" data-color="#111111" style="background:#111111;" title="Midnight Black"></button>
                   </div>
                 </div>
               </div>
@@ -200,11 +234,45 @@
 
               <div class="section-block">
                 <h3 class="section-title">PULL TAB COLOR</h3>
-                <div class="tab-color-group" id="pulltab-color-options">
-                  <button class="swatch-btn active" data-tab-color="#c5c9ce" style="background:#c5c9ce;" title="Classic Silver"></button>
-                  <button class="swatch-btn" data-tab-color="#E60012" style="background:#E60012;" title="Crimson Red"></button>
-                  <button class="swatch-btn" data-tab-color="#111111" style="background:#111111;" title="Midnight Black"></button>
-                  <button class="swatch-btn" data-tab-color="#ffb703" style="background:#ffb703;" title="Gold Starlight"></button>
+                <div class="color-picker-row">
+                  <div class="color-picker-item active" id="target-pulltab-color" style="grid-column: 1 / -1;">
+                    <div class="color-picker-header">
+                      <label for="input-pulltab-color">Pull Tab Anodized Metal</label>
+                      <span class="active-indicator-tag">ACTIVE</span>
+                    </div>
+                    <div class="color-input-wrapper">
+                      <input type="color" id="input-pulltab-color" value="#c5c9ce" />
+                      <span id="label-pulltab-hex">#C5C9CE</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pull Tab Color Scale & Spectrum Bar -->
+                <div class="color-scale-wrapper" id="pulltab-scale-wrapper">
+                  <div class="color-scale-header">
+                    <span class="color-scale-title">SPECTRUM COLOR SCALE</span>
+                    <span class="color-scale-target-hint">Applying to: <strong>Pull Tab</strong></span>
+                  </div>
+
+                  <!-- Continuous Gradient Hue Spectrum Slider -->
+                  <div class="hue-slider-track-wrap">
+                    <input type="range" id="pulltab-hue-slider" min="0" max="360" value="0" class="hue-slider-input" aria-label="Pull Tab Hue Spectrum Color Scale" />
+                  </div>
+
+                  <!-- Quick Color Scale Swatches -->
+                  <div class="scale-swatches-row" id="pulltab-color-options">
+                    <button type="button" class="swatch-btn active" data-tab-color="#c5c9ce" style="background:#c5c9ce;" title="Classic Silver"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#ffffff" style="background:#ffffff;" title="Glacier White"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#E60012" style="background:#E60012;" title="Crimson Red"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#ff3366" style="background:#ff3366;" title="Neon Coral"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#ff6b35" style="background:#ff6b35;" title="Electric Orange"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#ffb703" style="background:#ffb703;" title="Gold Starlight"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#00e676" style="background:#00e676;" title="Cyber Lime"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#00d2ff" style="background:#00d2ff;" title="Glacier Cyan"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#0052cc" style="background:#0052cc;" title="Cobalt Blue"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#9d4edd" style="background:#9d4edd;" title="Ultra Violet"></button>
+                    <button type="button" class="swatch-btn" data-tab-color="#111111" style="background:#111111;" title="Midnight Black"></button>
+                  </div>
                 </div>
               </div>
             </section>

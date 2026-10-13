@@ -116,6 +116,17 @@ class CocaColaCreationsApp {
       labelBaseHex: document.getElementById('label-base-hex'),
       inputAccentColor: document.getElementById('input-accent-color'),
       labelAccentHex: document.getElementById('label-accent-hex'),
+      targetBaseColor: document.getElementById('target-base-color'),
+      targetAccentColor: document.getElementById('target-accent-color'),
+      tagBaseStatus: document.getElementById('tag-base-status'),
+      tagAccentStatus: document.getElementById('tag-accent-status'),
+      lblScaleTarget: document.getElementById('lbl-scale-target'),
+      colorScaleHueSlider: document.getElementById('color-scale-hue-slider'),
+      formulaColorSwatches: document.querySelectorAll('.formula-swatch-btn'),
+      targetPullTabColor: document.getElementById('target-pulltab-color'),
+      inputPullTabColor: document.getElementById('input-pulltab-color'),
+      labelPullTabHex: document.getElementById('label-pulltab-hex'),
+      pullTabHueSlider: document.getElementById('pulltab-hue-slider'),
       finishBtns: document.querySelectorAll('.finish-btn'),
       pullTabBtns: document.querySelectorAll('.swatch-btn[data-tab-color]'),
 
@@ -259,6 +270,8 @@ class CocaColaCreationsApp {
     // 4. Initialize Community Gallery Manager
     this.gallery = new CommunityGalleryManager((config, title) => this.loadConfigFromCommunity(config, title));
 
+    this.activeColorFormulaTarget = 'base'; // 'base' or 'accent'
+
     this.initColorways();
     this.bindEvents();
     this.gallery.renderGallery(this.dom.galleryContainer);
@@ -291,6 +304,50 @@ class CocaColaCreationsApp {
     });
   }
 
+  setColorFormulaTarget(target) {
+    this.activeColorFormulaTarget = target;
+    const isBase = target === 'base';
+    if (this.dom.targetBaseColor) this.dom.targetBaseColor.classList.toggle('active', isBase);
+    if (this.dom.targetAccentColor) this.dom.targetAccentColor.classList.toggle('active', !isBase);
+    if (this.dom.tagBaseStatus) this.dom.tagBaseStatus.textContent = isBase ? 'ACTIVE' : 'SELECT';
+    if (this.dom.tagAccentStatus) this.dom.tagAccentStatus.textContent = !isBase ? 'ACTIVE' : 'SELECT';
+    if (this.dom.lblScaleTarget) this.dom.lblScaleTarget.textContent = isBase ? 'Primary Body' : 'Dynamic Wave Trim';
+  }
+
+  hslToHex(h, s = 100, l = 50) {
+    l /= 100;
+    const a = (s * Math.min(l, 1 - l)) / 100;
+    const f = n => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+  }
+
+  applyColorFromScale(hex) {
+    if (this.activeColorFormulaTarget === 'base') {
+      this.dom.inputBaseColor.value = hex;
+      this.dom.labelBaseHex.textContent = hex.toUpperCase();
+      this.textureMgr.updateState({ baseColor: hex });
+      this.scene.setShoulderColor(hex);
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+    } else {
+      this.dom.inputAccentColor.value = hex;
+      this.dom.labelAccentHex.textContent = hex.toUpperCase();
+      this.textureMgr.updateState({ accentColor: hex });
+    }
+  }
+
+  setPullTab(hex) {
+    if (this.dom.inputPullTabColor) this.dom.inputPullTabColor.value = hex;
+    if (this.dom.labelPullTabHex) this.dom.labelPullTabHex.textContent = hex.toUpperCase();
+    this.scene.setPullTabColor(hex);
+    this.dom.pullTabBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tabColor.toLowerCase() === hex.toLowerCase());
+    });
+  }
+
   selectColorway(preset) {
     this.audio.playClick();
     // Update active UI card
@@ -311,11 +368,8 @@ class CocaColaCreationsApp {
     this.scene.setCanFinish(preset.finish);
 
     // Update pull tab & shoulder
-    this.scene.setPullTabColor(preset.tab);
+    this.setPullTab(preset.tab);
     this.scene.setShoulderColor(preset.base);
-    this.dom.pullTabBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tabColor.toLowerCase() === preset.tab.toLowerCase());
-    });
 
     // Update chips
     this.dom.chipEdition.textContent = preset.name.toUpperCase();
@@ -343,7 +397,7 @@ class CocaColaCreationsApp {
     this.textureMgr.updateState(config);
 
     this.scene.setCanFinish(config.finish || 'gloss');
-    if (config.tabColor) this.scene.setPullTabColor(config.tabColor);
+    if (config.tabColor) this.setPullTab(config.tabColor);
     if (config.baseColor) this.scene.setShoulderColor(config.baseColor);
 
     // Sync UI elements
@@ -540,6 +594,51 @@ class CocaColaCreationsApp {
       this.textureMgr.updateState({ accentColor: hex });
     });
 
+    // Target Selection for Color Scale (Primary Body vs Wave Trim)
+    if (this.dom.targetBaseColor) {
+      this.dom.targetBaseColor.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'INPUT') {
+          this.setColorFormulaTarget('base');
+          this.audio.playClick();
+        }
+      });
+      this.dom.inputBaseColor.addEventListener('focus', () => {
+        this.setColorFormulaTarget('base');
+      });
+    }
+
+    if (this.dom.targetAccentColor) {
+      this.dom.targetAccentColor.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'INPUT') {
+          this.setColorFormulaTarget('accent');
+          this.audio.playClick();
+        }
+      });
+      this.dom.inputAccentColor.addEventListener('focus', () => {
+        this.setColorFormulaTarget('accent');
+      });
+    }
+
+    // Continuous Gradient Hue Spectrum Slider
+    if (this.dom.colorScaleHueSlider) {
+      this.dom.colorScaleHueSlider.addEventListener('input', (e) => {
+        const hue = parseFloat(e.target.value);
+        const hex = this.hslToHex(hue, 100, 50);
+        this.applyColorFromScale(hex);
+      });
+    }
+
+    // Quick Color Scale Swatches
+    if (this.dom.formulaColorSwatches) {
+      this.dom.formulaColorSwatches.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.audio.playClick();
+          const hex = btn.dataset.color;
+          this.applyColorFromScale(hex);
+        });
+      });
+    }
+
     // 7. Material Finish Options
     this.dom.finishBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -553,14 +652,26 @@ class CocaColaCreationsApp {
       });
     });
 
-    // 8. Pull Tab Color Options
+    // 8. Pull Tab Color Options & Spectrum Scale
+    if (this.dom.inputPullTabColor) {
+      this.dom.inputPullTabColor.addEventListener('input', (e) => {
+        this.setPullTab(e.target.value);
+      });
+    }
+
+    if (this.dom.pullTabHueSlider) {
+      this.dom.pullTabHueSlider.addEventListener('input', (e) => {
+        const hue = parseFloat(e.target.value);
+        const hex = this.hslToHex(hue, 100, 50);
+        this.setPullTab(hex);
+      });
+    }
+
     this.dom.pullTabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         this.audio.playClick();
-        this.dom.pullTabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         const col = btn.dataset.tabColor;
-        this.scene.setPullTabColor(col);
+        this.setPullTab(col);
       });
     });
 
