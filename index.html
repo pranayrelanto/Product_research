@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Coca-Cola Creations Lab — 3D Co-Creation Studio</title>
+    <meta name="title" content="Coca-Cola Creations Lab — 3D Co-Creation Studio" />
+    <meta name="description" content="Design and co-create your custom limited edition cold can in real-time 3D with realistic condensation, custom finishes, typography, and community voting." />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=Pacifico&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <!-- Top Navigation Bar -->
+      <header class="top-nav" id="top-nav">
+        <div class="brand-group">
+          <div class="brand-logo">
+            <span class="brand-sub">COCA-COLA</span>
+            <span class="brand-title">CREATIONS LAB</span>
+          </div>
+          <span class="badge-status">
+            <span class="pulse-dot"></span> 3D REAL-TIME ENGINE
+          </span>
+        </div>
+
+        <div class="nav-controls">
+          <button id="btn-sound-toggle" class="nav-btn" title="Toggle Sound FX" aria-label="Toggle Sound">
+            <span class="icon">🔊</span>
+            <span class="label">SOUND ON</span>
+          </button>
+          
+          <button id="btn-open-gallery" class="nav-btn nav-btn-highlight" aria-label="Open Community Submissions">
+            <span class="icon">✨</span>
+            <span class="label">COMMUNITY DROPS</span>
+          </button>
+
+          <button id="btn-submit-creation" class="btn-primary" aria-label="Submit Your Design">
+            <span>EXPORT & SUBMIT</span>
+            <span class="arrow-icon">→</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Stage -->
+      <main class="studio-layout">
+        <!-- 3D Viewport Area -->
+        <section class="viewport-area" id="viewport-container">
+          <div id="webgl-canvas-container" class="webgl-container"></div>
+
+          <!-- Environmental Vignette & Fog Overlays -->
+          <div class="viewport-vignette"></div>
+
+          <!-- Floating Top Studio Badges -->
+          <div class="viewport-header-pill">
+            <span class="edition-chip" id="chip-edition-name">ORIGINAL TASTE</span>
+            <span class="separator">/</span>
+            <span class="finish-chip" id="chip-finish-name">GLOSS METALLIC</span>
+          </div>
+
+          <!-- Viewport Camera Quick Dock -->
+          <nav class="camera-dock" aria-label="Camera Angles">
+            <button class="cam-btn active" data-cam="hero" id="cam-btn-hero">HERO</button>
+            <button class="cam-btn" data-cam="detail" id="cam-btn-detail">LABEL</button>
+            <button class="cam-btn" data-cam="top" id="cam-btn-top">PULL TAB</button>
+            <button class="cam-btn" data-cam="rear" id="cam-btn-rear">BACK</button>
+            <div class="dock-divider"></div>
+            <button class="cam-btn" id="btn-toggle-spin" title="Toggle 360 Spin">
+              <span class="spin-icon">↻</span> 360° SPIN
+            </button>
+            <div class="dock-divider"></div>
+            <button class="cam-btn cam-btn-pop" id="btn-toggle-pop" title="Pop Open or Close Tab">
+              <span class="pop-icon">⚡</span> <span id="lbl-pop-status">POP OPEN</span>
+            </button>
+            <button class="cam-btn cam-btn-pour" id="btn-toggle-pour" title="Pour Coke Out with Sound & Foam">
+              <span class="pour-icon">🌊</span> <span id="lbl-pour-status">POUR COKE</span>
+            </button>
+          </nav>
+
+          <!-- Interactive Drawing Overlay for Direct Can Graffiti -->
+          <div id="draw-mode-overlay" class="draw-overlay hidden">
+            <div class="draw-banner">
+              <span>✍️ CAN SURFACE DRAWING ACTIVE — Click & drag on the can</span>
+              <button id="btn-exit-draw" class="btn-small">Done Drawing</button>
+            </div>
+          </div>
+
+          <!-- Quick Floating Chill Dial -->
+          <div class="quick-chill-dial">
+            <div class="chill-header">
+              <span class="chill-icon">❄️</span>
+              <span class="chill-label">CHILL LEVEL: <strong id="quick-chill-val">75%</strong></span>
+            </div>
+            <input type="range" id="quick-chill-slider" min="0" max="100" value="75" class="chill-range" />
+          </div>
+
+          <!-- Viewport Watermark & Hints -->
+          <div class="viewport-hint">
+            <span>DRAG TO ROTATE &bull; SCROLL TO ZOOM &bull; SHIFT+DRAG TO PAN</span>
+          </div>
+        </section>
+
+        <!-- Right Side Customization Drawer (Lacoste Studio Style) -->
+        <aside class="editor-drawer" id="editor-drawer">
+          <!-- Drawer Tab Header -->
+          <div class="drawer-tabs" role="tablist">
+            <button class="tab-btn active" data-tab="tab-finish" id="tab-btn-finish" role="tab" aria-selected="true">
+              <span class="tab-num">01</span>
+              <span class="tab-name">FINISH</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-text" id="tab-btn-text" role="tab" aria-selected="false">
+              <span class="tab-num">02</span>
+              <span class="tab-name">NAME</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-flavor" id="tab-btn-flavor" role="tab" aria-selected="false">
+              <span class="tab-num">03</span>
+              <span class="tab-name">EDITION</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-graphics" id="tab-btn-graphics" role="tab" aria-selected="false">
+              <span class="tab-num">04</span>
+              <span class="tab-name">ART</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-frost" id="tab-btn-frost" role="tab" aria-selected="false">
+              <span class="tab-num">05</span>
+              <span class="tab-name">CHILL</span>
+            </button>
+          </div>
+
+          <!-- Tab Content Scrollable Container -->
+          <div class="drawer-content">
+
+            <!-- TAB 1: FINISH & COLOR -->
+            <section class="tab-panel active" id="tab-finish" role="tabpanel">
+              <div class="section-block">
+                <h3 class="section-title">ICONIC COLORWAYS</h3>
+                <p class="section-desc">Select an iconic palette or dial in your custom formula.</p>
+                <div class="presets-grid" id="presets-colorways">
+                  <!-- Dynamically populated via JS -->
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">CUSTOM COLOR FORMULA</h3>
+                <div class="color-picker-row">
+                  <div class="color-picker-item">
+                    <label for="input-base-color">Primary Body</label>
+                    <div class="color-input-wrapper">
+                      <input type="color" id="input-base-color" value="#E60012" />
+                      <span id="label-base-hex">#E60012</span>
+                    </div>
+                  </div>
+                  <div class="color-picker-item">
+                    <label for="input-accent-color">Dynamic Wave Trim</label>
+                    <div class="color-input-wrapper">
+                      <input type="color" id="input-accent-color" value="#FFFFFF" />
+                      <span id="label-accent-hex">#FFFFFF</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">CAN MATERIAL FINISH</h3>
+                <div class="finish-options" id="finish-options-group">
+                  <button class="finish-btn active" data-finish="gloss">
+                    <span class="finish-preview finish-gloss"></span>
+                    <span class="finish-meta">
+                      <strong>Gloss Metal</strong>
+                      <small>High sheen, reflective</small>
+                    </span>
+                  </button>
+                  <button class="finish-btn" data-finish="matte">
+                    <span class="finish-preview finish-matte"></span>
+                    <span class="finish-meta">
+                      <strong>Satin Matte</strong>
+                      <small>Velvety Zero-Sugar feel</small>
+                    </span>
+                  </button>
+                  <button class="finish-btn" data-finish="brushed">
+                    <span class="finish-preview finish-brushed"></span>
+                    <span class="finish-meta">
+                      <strong>Brushed Foil</strong>
+                      <small>Raw aluminum highlights</small>
+                    </span>
+                  </button>
+                  <button class="finish-btn" data-finish="chrome">
+                    <span class="finish-preview finish-chrome"></span>
+                    <span class="finish-meta">
+                      <strong>Mirror Chrome</strong>
+                      <small>Liquid silver reflection</small>
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">PULL TAB COLOR</h3>
+                <div class="tab-color-group" id="pulltab-color-options">
+                  <button class="swatch-btn active" data-tab-color="#c5c9ce" style="background:#c5c9ce;" title="Classic Silver"></button>
+                  <button class="swatch-btn" data-tab-color="#E60012" style="background:#E60012;" title="Crimson Red"></button>
+                  <button class="swatch-btn" data-tab-color="#111111" style="background:#111111;" title="Midnight Black"></button>
+                  <button class="swatch-btn" data-tab-color="#ffb703" style="background:#ffb703;" title="Gold Starlight"></button>
+                </div>
+              </div>
+            </section>
+
+            <!-- TAB 2: TYPOGRAPHY & "SHARE A CAN" NAME -->
+            <section class="tab-panel" id="tab-text" role="tabpanel">
+              <div class="section-block">
+                <h3 class="section-title">SHARE A CAN WITH</h3>
+                <p class="section-desc">Personalize your name, gamertag, or secret message.</p>
+                <div class="input-text-group">
+                  <input type="text" id="input-custom-name" maxlength="18" value="CREATOR" placeholder="ENTER YOUR NAME" />
+                  <span class="char-count" id="char-count">7/18</span>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">TYPOGRAPHY SCRIPT</h3>
+                <div class="font-styles-grid" id="font-style-group">
+                  <button class="font-card active" data-font="script">
+                    <span class="font-preview font-pacific">Coca-Cola</span>
+                    <span class="font-name">Heritage Script</span>
+                  </button>
+                  <button class="font-card" data-font="bebas">
+                    <span class="font-preview font-bebas">BOLD CONDENSED</span>
+                    <span class="font-name">Streetwear Impact</span>
+                  </button>
+                  <button class="font-card" data-font="syne">
+                    <span class="font-preview font-syne">AVANT GARDE</span>
+                    <span class="font-name">Cyber Minimal</span>
+                  </button>
+                  <button class="font-card" data-font="outfit">
+                    <span class="font-preview font-outfit">CLEAN MODERN</span>
+                    <span class="font-name">Contemporary</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">TEXT ADJUSTMENTS</h3>
+                <div class="slider-control">
+                  <div class="slider-header">
+                    <span>Font Size</span>
+                    <span id="lbl-font-size">100%</span>
+                  </div>
+                  <input type="range" id="slider-font-size" min="60" max="160" value="100" />
+                </div>
+
+                <div class="slider-control">
+                  <div class="slider-header">
+                    <span>Vertical Position</span>
+                    <span id="lbl-font-y">Center</span>
+                  </div>
+                  <input type="range" id="slider-font-y" min="-150" max="150" value="0" />
+                </div>
+
+                <div class="slider-control">
+                  <div class="slider-header">
+                    <span>Text Rotation</span>
+                    <span id="lbl-font-rot">-90°</span>
+                  </div>
+                  <input type="range" id="slider-font-rot" min="-180" max="180" value="-90" />
+                </div>
+
+                <div class="checkbox-row">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="check-curved-text" checked />
+                    <span class="checkbox-box"></span>
+                    <span>Wrap Along Cylinder Curve</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <!-- TAB 3: FLAVOR & EDITION BADGES -->
+            <section class="tab-panel" id="tab-flavor" role="tabpanel">
+              <div class="section-block">
+                <h3 class="section-title">CREATION FLAVOR EDITION</h3>
+                <p class="section-desc">Choose the limited edition insignia for your batch.</p>
+                <div class="flavor-cards-group" id="flavor-edition-options">
+                  <button class="flavor-card active" data-flavor="original">
+                    <span class="flavor-badge">CLASSIC</span>
+                    <div class="flavor-info">
+                      <strong>Original Taste</strong>
+                      <small>The timeless effervescent formula</small>
+                    </div>
+                  </button>
+
+                  <button class="flavor-card" data-flavor="zero">
+                    <span class="flavor-badge badge-black">ZERO</span>
+                    <div class="flavor-info">
+                      <strong>Zero Sugar</strong>
+                      <small>Zero calories, full flavor profile</small>
+                    </div>
+                  </button>
+
+                  <button class="flavor-card" data-flavor="cherry">
+                    <span class="flavor-badge badge-red">CHERRY</span>
+                    <div class="flavor-info">
+                      <strong>Wild Cherry Fizz</strong>
+                      <small>Tart cherry notes with rich vanilla bite</small>
+                    </div>
+                  </button>
+
+                  <button class="flavor-card" data-flavor="starlight">
+                    <span class="flavor-badge badge-galaxy">STARLIGHT</span>
+                    <div class="flavor-info">
+                      <strong>Galactic Cosmic Drop</strong>
+                      <small>Space-flavored cooling sensation</small>
+                    </div>
+                  </button>
+
+                  <button class="flavor-card" data-flavor="lime">
+                    <span class="flavor-badge badge-green">LIME ZERO</span>
+                    <div class="flavor-info">
+                      <strong>Crisp Neon Lime</strong>
+                      <small>Zesty citrus blast with ice finish</small>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">DYNAMIC WAVE PATTERNS</h3>
+                <div class="wave-patterns-grid" id="wave-patterns-group">
+                  <button class="pattern-btn active" data-pattern="classic">Classic Ribbon</button>
+                  <button class="pattern-btn" data-pattern="double">Double Harmonic Wave</button>
+                  <button class="pattern-btn" data-pattern="stark-arc">⚡ Stark Arc Circuit</button>
+                  <button class="pattern-btn" data-pattern="web-lattice">🕸️ Web-Slinger Lattice</button>
+                  <button class="pattern-btn" data-pattern="claws">🐾 Berserker Slash</button>
+                  <button class="pattern-btn" data-pattern="lightning">⚡ God of Thunder / Speed</button>
+                  <button class="pattern-btn" data-pattern="stealth-bat">🦇 Gotham Chevron</button>
+                  <button class="pattern-btn" data-pattern="vibranium-weave">🛡️ Vibranium Weave</button>
+                  <button class="pattern-btn" data-pattern="amazon-crest">⚔️ Amazonian Crest</button>
+                  <button class="pattern-btn" data-pattern="ocean-tide">🌊 Atlantis Tide</button>
+                  <button class="pattern-btn" data-pattern="acid-laugh">🃏 Acid Laugh Pulse</button>
+                  <button class="pattern-btn" data-pattern="geometric">Cyber Halftone Dots</button>
+                  <button class="pattern-btn" data-pattern="minimal">Minimal Clean</button>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">CREATION SEALS</h3>
+                <div class="seal-toggles">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="check-seal-member" checked />
+                    <span class="checkbox-box"></span>
+                    <span>Exclusive Member Seal #2026</span>
+                  </label>
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="check-seal-recycle" checked />
+                    <span class="checkbox-box"></span>
+                    <span>100% Recyclable Aluminum Emblem</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <!-- TAB 4: ARTWORK, STAMPS & DRAWING -->
+            <section class="tab-panel" id="tab-graphics" role="tabpanel">
+              <div class="section-block">
+                <h3 class="section-title">CAN SURFACE GRAFFITI</h3>
+                <p class="section-desc">Draw or stamp custom art onto the 3D can like the Lacoste Co-Creation tool.</p>
+                <div class="art-tools-bar">
+                  <button id="btn-toggle-draw-mode" class="btn-tool-action">
+                    <span>🖌️ Toggle Direct Painting</span>
+                  </button>
+                  <button id="btn-clear-drawing" class="btn-tool-secondary">
+                    <span>Clear Art</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">BRUSH PALETTE</h3>
+                <div class="brush-colors-row" id="brush-colors-list">
+                  <button class="brush-dot active" data-brush-color="#ffffff" style="background:#ffffff;"></button>
+                  <button class="brush-dot" data-brush-color="#000000" style="background:#000000;"></button>
+                  <button class="brush-dot" data-brush-color="#f40009" style="background:#f40009;"></button>
+                  <button class="brush-dot" data-brush-color="#ffd166" style="background:#ffd166;"></button>
+                  <button class="brush-dot" data-brush-color="#06d6a0" style="background:#06d6a0;"></button>
+                  <button class="brush-dot" data-brush-color="#118ab2" style="background:#118ab2;"></button>
+                </div>
+                <div class="slider-control" style="margin-top:14px;">
+                  <div class="slider-header">
+                    <span>Brush Width</span>
+                    <span id="lbl-brush-size">14px</span>
+                  </div>
+                  <input type="range" id="slider-brush-size" min="4" max="40" value="14" />
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h3 class="section-title">STICKER PACK (TAP TO STAMP)</h3>
+                <div class="stickers-grid" id="stickers-pack">
+                  <button class="sticker-btn" data-stamp="lightning">⚡ Bolt</button>
+                  <button class="sticker-btn" data-stamp="star">★ Retro Star</button>
+                  <button class="sticker-btn" data-stamp="flame">🔥 Heat</button>
+                  <button class="sticker-btn" data-stamp="ice">❄ Ice Crystal</button>
+                  <button class="sticker-btn" data-stamp="smile">☺ Acid Smile</button>
+                  <button class="sticker-btn" data-stamp="crown">👑 Crown</button>
+                  <button class="sticker-btn" data-stamp="heart">♥ Love</button>
+                  <button class="sticker-btn" data-stamp="barcode">||| Vintage Code</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- TAB 5: CONDENSATION & FROST -->
+            <section class="tab-panel" id="tab-frost" role="tabpanel">
+              <div class="section-block">
+                <h3 class="section-title">BEVERAGE CHILL DYNAMICS</h3>
+                <p class="section-desc">Control the icy condensation droplets running down the chilled aluminum.</p>
+                
+                <div class="slider-control">
+                  <div class="slider-header">
+                    <span>Chill Temperature</span>
+                    <span id="lbl-frost-chill">Ice Cold (75%)</span>
+                  </div>
+                  <input type="range" id="slider-frost-chill" min="0" max="100" value="75" />
+                </div>
+
+                <div class="slider-control">
+                  <div class="slider-header">
+                    <span>Droplet Bump Intensity</span>
+                    <span id="lbl-frost-droplets">Medium</span>
+                  </div>
+                  <input type="range" id="slider-frost-droplets" min="0" max="100" value="65" />
+                </div>
+
+                <div class="slider-control">
+                  <div class="slider-header">
+                    <span>Carbonation Fizz Speed</span>
+                    <span id="lbl-fizz-speed">Active</span>
+                  </div>
+                  <input type="range" id="slider-fizz-speed" min="0" max="100" value="60" />
+                </div>
+
+                <div class="checkbox-row" style="margin-top:16px;">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="check-ambient-cubes" checked />
+                    <span class="checkbox-box"></span>
+                    <span>Floating Ice Cubes & Carbonation Bubbles</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <div class="chill-sensor-card">
+                  <div class="sensor-icon">🌡️</div>
+                  <div class="sensor-info">
+                    <strong>Optimal Serving: 3°C / 37°F</strong>
+                    <p>Condensation beads form continuously on brushed aluminum at high humidity.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- Bottom Drawer Action Footer -->
+          <footer class="drawer-footer">
+            <button id="btn-randomize" class="btn-footer-sub" title="Randomize Inspiration">
+              🎲 SURPRISE ME
+            </button>
+            <button id="btn-snapshot-quick" class="btn-footer-primary">
+              📸 SNAPSHOT 4K
+            </button>
+          </footer>
+        </aside>
+      </main>
+
+      <!-- Community Gallery Slide-Over Drawer -->
+      <div id="gallery-drawer" class="gallery-drawer-overlay hidden" aria-hidden="true">
+        <div class="gallery-drawer-content">
+          <div class="gallery-header">
+            <div>
+              <span class="gallery-tag">CREATIONS SHOWCASE</span>
+              <h2 class="gallery-title">COMMUNITY VOTING GALLERY</h2>
+            </div>
+            <button id="btn-close-gallery" class="btn-close-drawer" aria-label="Close Gallery">✕</button>
+          </div>
+
+          <p class="gallery-sub">Explore limited-edition cans engineered by community creators worldwide. Tap any can to inspect in 3D or cast your member vote.</p>
+
+          <div class="gallery-filter-bar" id="gallery-filter-bar">
+            <button class="gallery-filter-chip active" data-filter="all">⚡ ALL DROPS</button>
+            <button class="gallery-filter-chip" data-filter="marvel">🦸 MARVEL</button>
+            <button class="gallery-filter-chip" data-filter="dc">🦇 DC COMICS</button>
+            <button class="gallery-filter-chip" data-filter="original">✨ ORIGINALS</button>
+          </div>
+
+          <div class="gallery-grid" id="community-gallery-container">
+            <!-- Dynamically populated community cards -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Submission & Export Modal -->
+      <div id="submit-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-card">
+          <button id="btn-close-modal" class="btn-close-modal" aria-label="Close Modal">✕</button>
+          
+          <div class="modal-header">
+            <span class="modal-tag">CO-CREATION CERTIFICATE</span>
+            <h2 class="modal-title">SUBMIT YOUR CREATION</h2>
+            <p class="modal-desc">Your limited-edition can has been rendered in 4K. Name your drop and submit to the global Coca-Cola community leaderboard.</p>
+          </div>
+
+          <div class="modal-preview-wrapper">
+            <img id="export-preview-img" src="" alt="Custom Can Preview" class="modal-preview-img" />
+            <div class="preview-badge-overlay" id="modal-preview-badge">EDITION #2026</div>
+          </div>
+
+          <form id="form-submit-creation" class="modal-form" onsubmit="return false;">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="input-creator-handle">CREATOR ALIAS</label>
+                <input type="text" id="input-creator-handle" placeholder="e.g. StudioZero, NeonKai" required />
+              </div>
+              <div class="form-field">
+                <label for="input-can-title">CAN EDITION TITLE</label>
+                <input type="text" id="input-can-title" placeholder="e.g. Midnight Cyber Cherry" required />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="input-flavor-notes">TASTING & DESIGN NOTES</label>
+              <textarea id="input-flavor-notes" rows="2" placeholder="Describe the vibe, taste profile, and inspiration behind your co-creation..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" id="btn-download-render" class="btn-modal-sub">
+                📥 DOWNLOAD HIGH-RES PNG
+              </button>
+              <button type="button" id="btn-confirm-submit" class="btn-modal-primary">
+                🚀 SUBMIT TO COMMUNITY DROP
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Toast Notification Alert -->
+      <div id="toast-notification" class="toast-bubble hidden" role="status">
+        <span id="toast-icon">✨</span>
+        <span id="toast-message">Message text</span>
+      </div>
+    </div>
+
+    <!-- Application Script Entrypoint -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
