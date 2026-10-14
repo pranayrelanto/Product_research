@@ -99,13 +99,149 @@
             </div>
           </div>
 
-          <!-- Quick Floating Chill Dial -->
-          <div class="quick-chill-dial">
-            <div class="chill-header">
-              <span class="chill-icon">❄️</span>
-              <span class="chill-label">CHILL LEVEL: <strong id="quick-chill-val">75%</strong></span>
+          <!-- Interactive Floating Cyborg AI Companion (Replaces Chill Dial) -->
+          <div id="cyborg-companion-anchor" class="cyborg-anchor" title="Click to chat with Cyborg Can Customizer" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Open Cyborg AI Can Architect Chatbot">
+            <!-- Pulsing Holographic Repulsor Base -->
+            <div class="cyborg-repulsor-field">
+              <div class="repulsor-ring repulsor-ring-1"></div>
+              <div class="repulsor-ring repulsor-ring-2"></div>
+              <div class="repulsor-glow"></div>
             </div>
-            <input type="range" id="quick-chill-slider" min="0" max="100" value="75" class="chill-range" />
+
+            <!-- Animated SVG Cyborg Character with Dynamic Can Scheme -->
+            <div class="cyborg-character-wrap" id="cyborg-character">
+              <svg class="cyborg-svg" viewBox="0 0 120 140" width="86" height="100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="cyborgBaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--bot-scheme-base, #E60012)" />
+                    <stop offset="100%" stop-color="var(--bot-scheme-base-dark, #80000a)" />
+                  </linearGradient>
+                  <filter id="cyborgGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                <!-- Floating Micro Energy Drones / Winglets -->
+                <g class="cyborg-wing-left">
+                  <path d="M22 64 L8 50 L14 74 Z" fill="var(--bot-scheme-base, #E60012)" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.2" opacity="0.9" />
+                  <circle cx="12" cy="52" r="2" fill="var(--bot-scheme-accent, #fff)" />
+                </g>
+                <g class="cyborg-wing-right">
+                  <path d="M98 64 L112 50 L106 74 Z" fill="var(--bot-scheme-base, #E60012)" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.2" opacity="0.9" />
+                  <circle cx="108" cy="52" r="2" fill="var(--bot-scheme-accent, #fff)" />
+                </g>
+
+                <!-- Mechanical Torso & Armor Plates -->
+                <path d="M42 78 L78 78 L72 108 L60 114 L48 108 Z" fill="url(#cyborgBaseGrad)" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.5" />
+                <path d="M50 82 L70 82 L66 102 L60 106 L54 102 Z" fill="#141419" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                
+                <!-- Glowing Arc Reactor / Power Core -->
+                <circle class="cyborg-core-pulse" cx="60" cy="94" r="6.5" fill="var(--bot-scheme-accent, #fff)" filter="url(#cyborgGlow)" />
+                <circle cx="60" cy="94" r="3" fill="#ffffff" />
+
+                <!-- Shoulder Armor Pads -->
+                <path d="M30 68 L42 66 L44 82 L28 80 Z" fill="url(#cyborgBaseGrad)" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.5" />
+                <path d="M90 68 L78 66 L76 82 L92 80 Z" fill="url(#cyborgBaseGrad)" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.5" />
+
+                <!-- Neck & Chassis Base -->
+                <rect x="54" y="66" width="12" height="12" rx="2" fill="#242630" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+
+                <!-- Cybernetic Helmet / Head -->
+                <path d="M36 42 C36 24, 84 24, 84 42 L80 66 L40 66 Z" fill="url(#cyborgBaseGrad)" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.8" />
+                <!-- Cranial Armor Lines -->
+                <path d="M44 28 L60 22 L76 28" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.8" />
+                
+                <!-- Antennae / Data Horns -->
+                <line x1="36" y1="36" x2="26" y2="20" stroke="var(--bot-scheme-accent, #fff)" stroke-width="2" stroke-linecap="round" />
+                <circle cx="26" cy="20" r="2.5" fill="var(--bot-scheme-accent, #fff)" filter="url(#cyborgGlow)" />
+                <line x1="84" y1="36" x2="94" y2="20" stroke="var(--bot-scheme-accent, #fff)" stroke-width="2" stroke-linecap="round" />
+                <circle cx="94" cy="20" r="2.5" fill="var(--bot-scheme-accent, #fff)" filter="url(#cyborgGlow)" />
+
+                <!-- Optical Visor Window -->
+                <rect x="42" y="40" width="36" height="14" rx="4" fill="#080a10" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1.4" />
+                <!-- Visor Laser Scan Beam -->
+                <line class="cyborg-scanner-beam" x1="44" y1="47" x2="76" y2="47" stroke="var(--bot-scheme-accent, #fff)" stroke-width="2.5" stroke-linecap="round" filter="url(#cyborgGlow)" />
+                <circle class="cyborg-scanner-dot" cx="60" cy="47" r="2" fill="#ffffff" />
+
+                <!-- Chin & Mouth Shield (Speaker grille) -->
+                <path d="M50 58 L70 58 L66 64 L54 64 Z" fill="#181a22" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+                <line x1="56" y1="60" x2="64" y2="60" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1" opacity="0.7" />
+                <line x1="57" y1="62" x2="63" y2="62" stroke="var(--bot-scheme-accent, #fff)" stroke-width="1" opacity="0.7" />
+              </svg>
+            </div>
+
+            <!-- Floating Label Pill -->
+            <div class="cyborg-pill-label">
+              <span class="cyborg-pulse-dot"></span>
+              <span class="cyborg-bot-title">CYBORG AI</span>
+              <span class="cyborg-hint-action">CHAT</span>
+            </div>
+          </div>
+
+          <!-- Cyborg AI Chatbot Panel -->
+          <div id="cyborg-chat-panel" class="cyborg-chat-panel hidden" role="dialog" aria-modal="false" aria-label="Cyborg AI Can Customizer">
+            <!-- Panel Header -->
+            <div class="cyborg-chat-header">
+              <div class="chat-header-info">
+                <div class="cyborg-mini-avatar">
+                  <span class="avatar-icon">🤖</span>
+                  <span class="avatar-status-dot"></span>
+                </div>
+                <div>
+                  <div class="chat-header-title">CYBORG CO-CREATOR</div>
+                  <div class="chat-header-subtitle">AI Can Architect • Real-Time 3D</div>
+                </div>
+              </div>
+              <div class="chat-header-actions">
+                <button id="btn-cyborg-clear" class="btn-chat-tool" title="Reset chat history" aria-label="Reset chat">↺</button>
+                <button id="btn-close-cyborg-chat" class="btn-chat-close" title="Minimize Cyborg Chat" aria-label="Close Chat">✕</button>
+              </div>
+            </div>
+
+            <!-- Suggestion Quick Chips -->
+            <div class="cyborg-quick-prompts-bar">
+              <span class="quick-prompts-label">PROMPTS:</span>
+              <div class="quick-prompts-scroll" id="cyborg-quick-prompts">
+                <button class="quick-prompt-chip" data-prompt="Make it Cyber Lime with chrome finish">Cyber Lime Chrome</button>
+                <button class="quick-prompt-chip" data-prompt="Change base to Matte Black with Gold trim">Matte Black & Gold</button>
+                <button class="quick-prompt-chip" data-prompt="Set name to CYBERPUNK and make it ice cold">Name: CYBERPUNK</button>
+                <button class="quick-prompt-chip" data-prompt="Turn into Starlight Galaxy edition">Starlight Galaxy</button>
+                <button class="quick-prompt-chip" data-prompt="Pop open and pour Coke into glass">Pop & Pour</button>
+                <button class="quick-prompt-chip" data-prompt="Make it 100% freezing frost">Ice Cold 100%</button>
+                <button class="quick-prompt-chip" data-prompt="Surprise me with a random design">Surprise Me 🎲</button>
+              </div>
+            </div>
+
+            <!-- Messages Log -->
+            <div class="cyborg-chat-messages" id="cyborg-chat-messages">
+              <!-- Initial Welcome Message inserted dynamically -->
+            </div>
+
+            <!-- Typing indicator -->
+            <div id="cyborg-typing-indicator" class="cyborg-typing-indicator hidden">
+              <span class="typing-wave"></span>
+              <span class="typing-text">Cyborg is recalibrating 3D shaders...</span>
+            </div>
+
+            <!-- Input Bar -->
+            <form id="cyborg-chat-form" class="cyborg-chat-form" onsubmit="return false;">
+              <div class="chat-input-wrapper">
+                <input 
+                  type="text" 
+                  id="cyborg-chat-input" 
+                  class="cyborg-chat-input" 
+                  placeholder="Tell Cyborg what to change on the can..." 
+                  autocomplete="off"
+                  maxlength="200"
+                />
+                <button type="submit" id="btn-cyborg-send" class="cyborg-send-btn" title="Send instruction to Cyborg" aria-label="Send message">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                  </svg>
+                </button>
+              </div>
+            </form>
           </div>
 
           <!-- Viewport Watermark & Hints -->

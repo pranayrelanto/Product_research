@@ -3,6 +3,7 @@ import { StudioScene } from './scene.js';
 import { CanTextureManager } from './textureManager.js';
 import { SodaAudioEngine } from './audio.js';
 import { CommunityGalleryManager } from './gallery.js';
+import { CyborgChatbot } from './cyborgChatbot.js';
 
 // ==========================================================================
 // COLORWAY PRESETS
@@ -294,11 +295,13 @@ class CocaColaCreationsApp {
     // 4. Initialize Community Gallery Manager
     this.gallery = new CommunityGalleryManager((config, title) => this.loadConfigFromCommunity(config, title));
 
-    this.activeColorFormulaTarget = 'base'; // 'base' or 'accent'
-
+    this.COLORWAY_PRESETS = COLORWAY_PRESETS;
     this.initColorways();
     this.bindEvents();
     this.gallery.renderGallery(this.dom.galleryContainer);
+
+    // 5. Initialize Cyborg AI Companion & Can Customizer Chatbot
+    this.cyborg = new CyborgChatbot(this);
 
     // Trigger initial can crack sound after user first interaction
     window.addEventListener('click', () => {
@@ -361,6 +364,7 @@ class CocaColaCreationsApp {
       this.dom.labelAccentHex.textContent = hex.toUpperCase();
       this.textureMgr.updateState({ accentColor: hex });
     }
+    this.cyborg?.updateScheme(this.textureMgr.state.baseColor, this.textureMgr.state.accentColor, this.textureMgr.state.finish);
   }
 
   setPullTab(hex) {
@@ -577,6 +581,7 @@ class CocaColaCreationsApp {
       c.classList.toggle('active', c.dataset.flavor === preset.flavor);
     });
 
+    this.cyborg?.updateScheme(preset.base, preset.accent, preset.finish);
     this.showToast(`Switched to ${preset.name}`, '🎨');
   }
 
@@ -612,6 +617,8 @@ class CocaColaCreationsApp {
         btn.classList.toggle('active', btn.dataset.tabColor.toLowerCase() === config.tabColor.toLowerCase());
       });
     }
+
+    this.cyborg?.updateScheme(config.baseColor || '#E60012', config.accentColor || '#FFFFFF', config.finish || 'gloss');
 
     // Sync pattern buttons
     if (this.dom.patternBtns && config.wavePattern) {
@@ -734,20 +741,24 @@ class CocaColaCreationsApp {
 
     // 4. Quick Chill Dial & Drawer Slider Sync
     const updateChill = (val) => {
-      this.dom.quickChillSlider.value = val;
-      this.dom.sliderFrostChill.value = val;
-      this.dom.quickChillVal.textContent = `${val}%`;
-      this.dom.lblFrostChill.textContent = val > 70 ? `Ice Cold (${val}%)` : val > 30 ? `Chilled (${val}%)` : `Room Temp (${val}%)`;
+      if (this.dom.quickChillSlider) this.dom.quickChillSlider.value = val;
+      if (this.dom.sliderFrostChill) this.dom.sliderFrostChill.value = val;
+      if (this.dom.quickChillVal) this.dom.quickChillVal.textContent = `${val}%`;
+      if (this.dom.lblFrostChill) this.dom.lblFrostChill.textContent = val > 70 ? `Ice Cold (${val}%)` : val > 30 ? `Chilled (${val}%)` : `Room Temp (${val}%)`;
       this.textureMgr.updateState({ chillLevel: parseInt(val, 10) });
     };
 
-    this.dom.quickChillSlider.addEventListener('input', (e) => {
-      updateChill(e.target.value);
-    });
+    if (this.dom.quickChillSlider) {
+      this.dom.quickChillSlider.addEventListener('input', (e) => {
+        updateChill(e.target.value);
+      });
+    }
 
-    this.dom.sliderFrostChill.addEventListener('input', (e) => {
-      updateChill(e.target.value);
-    });
+    if (this.dom.sliderFrostChill) {
+      this.dom.sliderFrostChill.addEventListener('input', (e) => {
+        updateChill(e.target.value);
+      });
+    }
 
     // 5. Drawer Tab Switcher
     this.dom.tabBtns.forEach(btn => {
@@ -837,6 +848,7 @@ class CocaColaCreationsApp {
         this.scene.setCanFinish(finish);
         this.textureMgr.updateState({ finish: finish });
         this.dom.chipFinish.textContent = finish.toUpperCase() + ' METALLIC';
+        this.cyborg?.updateScheme(this.textureMgr.state.baseColor, this.textureMgr.state.accentColor, finish);
       });
     });
 

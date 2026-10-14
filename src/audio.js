@@ -330,5 +330,56 @@ export class SodaAudioEngine {
     bell.start(t);
     bell.stop(t + 0.62);
   }
+
+  // Futuristic cybernetic audio feedback for Cyborg AI interactions
+  playCyborgBeep(type = 'ack') {
+    if (!this.enabled) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    if (type === 'open') {
+      // Ascending two-tone cyber greeting
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, t);
+      osc.frequency.exponentialRampToValueAtTime(1040, t + 0.12);
+      gain.gain.setValueAtTime(0.14, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.16);
+    } else if (type === 'apply') {
+      // Futuristic 3-tone technological chord for applying can changes
+      [587.33, 880, 1174.66].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.035);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.25, t + idx * 0.035 + 0.09);
+        gain.gain.setValueAtTime(0.11, t + idx * 0.035);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.035 + 0.14);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t + idx * 0.035);
+        osc.stop(t + idx * 0.035 + 0.16);
+      });
+    } else {
+      // Crisp tech blip for acknowledgment
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(950, t);
+      osc.frequency.exponentialRampToValueAtTime(1450, t + 0.05);
+      gain.gain.setValueAtTime(0.1, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.08);
+    }
+  }
 }
 
